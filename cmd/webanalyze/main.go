@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rverton/webanalyze"
+	"github.com/secinto/webanalyze"
 )
 
 var (
@@ -30,6 +30,7 @@ var (
 	searchSubdomain bool
 	silent          bool
 	redirect        bool
+	version         bool
 )
 
 func init() {
@@ -43,6 +44,7 @@ func init() {
 	flag.BoolVar(&searchSubdomain, "search", true, "searches all urls with same base domain (i.e. example.com and sub.example.com)")
 	flag.BoolVar(&silent, "silent", false, "avoid printing header (default false)")
 	flag.BoolVar(&redirect, "redirect", false, "follow http redirects (default false)")
+	flag.BoolVar(&version, "version", false, "shows the current version info")
 }
 
 func main() {
@@ -55,6 +57,11 @@ func main() {
 	)
 
 	flag.Parse()
+
+	if version {
+		printHeader()
+		return
+	}
 
 	if !update && host == "" && hosts == "" {
 		flag.Usage()
@@ -200,10 +207,12 @@ func output(result webanalyze.Result, wa *webanalyze.WebAnalyzer, outWriter *csv
 	case "json":
 
 		output := struct {
-			Hostname string             `json:"hostname"`
-			Matches  []webanalyze.Match `json:"matches"`
+			Hostname  string             `json:"hostname"`
+			Timestamp time.Time          `json:"timestamp"`
+			Matches   []webanalyze.Match `json:"matches"`
 		}{
 			result.Host,
+			result.Timestamp,
 			result.Matches,
 		}
 

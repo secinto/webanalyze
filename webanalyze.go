@@ -15,7 +15,7 @@ import (
 	"github.com/bobesa/go-domain-util/domainutil"
 )
 
-const VERSION = "0.3.7"
+const VERSION = "0.3.7-sk"
 
 var (
 	timeout = 8 * time.Second
@@ -24,10 +24,11 @@ var (
 
 // Result type encapsulates the result information from a given host
 type Result struct {
-	Host     string        `json:"host"`
-	Matches  []Match       `json:"matches"`
-	Duration time.Duration `json:"duration"`
-	Error    error         `json:"error"`
+	Host      string        `json:"host"`
+	Matches   []Match       `json:"matches"`
+	Duration  time.Duration `json:"duration"`
+	Error     error         `json:"error"`
+	Timestamp time.Time     `json:"timestamp"`
 }
 
 // Match type encapsulates the App information from a match on a document
@@ -86,10 +87,11 @@ func (wa *WebAnalyzer) Process(job *Job) (Result, []string) {
 	t1 := time.Now()
 
 	res := Result{
-		Host:     job.URL,
-		Matches:  result,
-		Duration: t1.Sub(t0),
-		Error:    err,
+		Host:      job.URL,
+		Timestamp: time.Now(),
+		Matches:   result,
+		Duration:  t1.Sub(t0),
+		Error:     err,
 	}
 	return res, links
 }
